@@ -1,55 +1,52 @@
-# Release Process
+# Freeplane LLM Addon
 
-## Automated Release (Recommended)
+A Freeplane addon that integrates with LLM APIs for brainstorming and content generation.
 
-### Option 1: Tag-based Release
-1. Commit your changes
-2. Create and push a tag:
-   ```bash
-   git tag v0.7.0
-   git push origin v0.7.0
-   ```
-3. GitHub Actions will automatically:
-   - Build the addon file
-   - Create a GitHub release
-   - Upload `LLM-AddOn-v0.7.0.addon.mm` to the release
+## Features
 
-### Option 2: Manual Workflow
-1. Go to [Actions](https://github.com/alex-tw-lam/freeplane_ml_addon/actions) in your repo
-2. Select "Build and Release Addon" workflow
-3. Click "Run workflow"
-4. Enter the version number (e.g., v0.7.0)
-5. Click "Run workflow"
-
-## Local Development Build
-
-If you need to build locally:
-
-### Prerequisites
-- Java 17+
-- Gradle 8.5+ (or use included gradlew)
-
-### Build Steps
-```bash
-# Using gradlew (recommended)
-./gradlew jar
-./gradlew freeplaneCreateAddon
-
-# Or using system gradle
-gradle jar
-gradle freeplaneCreateAddon
-```
-
-The addon file will be generated as `LLM-AddOn-v0.7.0.addon.mm` in the project root.
+- **Quick Prompt (Ctrl+Alt+G):** Generate ideas from any selected node
+- **Multiple LLM Providers:** Support for OpenAI, OpenRouter, and DeepSeek
+- **Compare Connected Nodes:** Analyze relationships between nodes
+- **Image Generation:** Create images based on node content
+- **Automatic Tagging:** Generated content is tagged with model information
 
 ## Installation
 
 1. Download the latest `.addon.mm` file from [Releases](https://github.com/alex-tw-lam/freeplane_ml_addon/releases)
-2. In Freeplane: Tools → Add-ons → Install Add-on
+2. In Freeplane: `Tools → Add-ons → Install Add-on`
 3. Select the downloaded file and restart Freeplane
 
-## Version Management
+## Quick Start
 
-- Update `version.properties` file before creating releases
-- The workflow automatically uses the version from this file
-- Releases are automatically tagged and uploaded to GitHub
+1. Configure your API key: `LLM → Configure Prompts & Model`
+2. Select a node in your mind map
+3. Press `Ctrl+Alt+G` to generate content
+4. Use `Tools → LLM AddOn` for advanced features
+
+## Development
+
+### Prerequisites
+- Java 17+
+- Gradle (or use included gradlew)
+
+### Build
+```bash
+./gradlew freeplaneCreateAddon
+```
+
+### Release
+```bash
+git tag v0.7.0
+git push origin v0.7.0
+```
+
+## Supported Providers
+
+- **OpenAI:** GPT models
+- **OpenRouter:** Multiple model access
+- **DeepSeek:** Chat and coding models
+- **Novita:** Image generation
+
+## License
+
+See LICENSE file for details.

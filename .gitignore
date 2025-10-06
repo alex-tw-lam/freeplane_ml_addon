@@ -1,6 +1,7 @@
-/*-*.addon.mm
-/.idea/
-/.vscode/
+.idea/
+.vscode/
 .aider*
-/build/
-/.gradle/
+build/
+.gradle/
+*.addon.mm
+.DS_Store
