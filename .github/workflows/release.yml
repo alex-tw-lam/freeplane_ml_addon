@@ -1,0 +1,98 @@
+name: Build and Release Addon
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v0.7.0)'
+        required: true
+        default: 'v0.7.0'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Download Freeplane
+      run: |
+        wget https://sourceforge.net/projects/freeplane/files/freeplane%20stable/freeplane-${{ vars.FREEPLANE_VERSION || '1.12.9' }}/freeplane-${{ vars.FREEPLANE_VERSION || '1.12.9' }}-bin.tar.gz/download -O freeplane.tar.gz
+        tar -xzf freeplane.tar.gz
+        echo "FREEPLANE_HOME=${{ github.workspace }}/freeplane-${{ vars.FREEPLANE_VERSION || '1.12.9' }}" >> $GITHUB_ENV
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build JAR
+      run: ./gradlew jar
+
+    - name: Build Addon
+      run: ./gradlew freeplaneCreateAddon
+
+    - name: Get version from file
+      id: version
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        else
+          echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          LLM-AddOn-*.addon.mm
+          build/libs/llm.jar
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release (Manual)
+      if: github.event_name == 'workflow_dispatch'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        target_commitish: main
+        files: |
+          LLM-AddOn-*.addon.mm
+          build/libs/llm.jar
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+        name: ${{ steps.version.outputs.version }}
+        body: |
+          ## ${{ steps.version.outputs.version }}
+
+          **Note:** Add release notes manually or update the workflow to auto-generate them.
+
+          ### Installation
+          1. Download `LLM-AddOn-${{ steps.version.outputs.version }}.addon.mm`
+          2. In Freeplane: Tools → Add-ons → Install Add-on
+          3. Select the downloaded file and restart Freeplane
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
