@@ -7,11 +7,14 @@ import org.freeplane.core.util.LogUtils
  */
 //@CompileStatic
 class ConfigManager {
+
     // Define default models directly in code
     static final List<String> DEFAULT_MODELS = [
             'meta-llama/llama-3.2-1b-instruct',
             'deepseek/deepseek-r1-zero:free',
             'deepseek/deepseek-r1',
+            'deepseek-chat',
+            'deepseek-coder',
             'anthropic/claude-3-opus',
             'anthropic/claude-3-sonnet',
             'anthropic/claude-3-haiku',
@@ -110,7 +113,7 @@ class ConfigManager {
             return 0
         }
     }
-    
+
     /**
      * Saves a user-specific property for the LLM add-on
      * @param config The Freeplane config object
@@ -144,7 +147,7 @@ class ConfigManager {
             return defaultValue
         }
     }
-    
+
     /**
      * Deletes a user-specific property
      * @param config The Freeplane config object
@@ -161,4 +164,5 @@ class ConfigManager {
             throw e
         }
     }
+
 }
